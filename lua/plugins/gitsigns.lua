@@ -11,6 +11,10 @@ return {
           topdelete = { text = "‾" },
           changedelete = { text = "~" },
         },
+        current_line_blame = true,        -- inline git blame
+        current_line_blame_opts = {
+          delay = 500,
+        },
       })
     end,
   }

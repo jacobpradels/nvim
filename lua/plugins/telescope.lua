@@ -1,8 +1,8 @@
 local special_files = {
   tsx = { "index", "page" },
-  ts = { "index" },
+  ts = { "index", "types", "consts" },
   js = { "index" },
-  py = { "__init__", "handler" },
+  py = { "__init__", "handler", "server" },
 }
 
 return {
@@ -11,7 +11,7 @@ return {
     lazy = false,
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-      require("telescope").setup({
+    require("telescope").setup({
         defaults = {
           path_display = function(_, path)
             local tail = require("telescope.utils").path_tail(path)
@@ -26,7 +26,14 @@ return {
               end
             end
 
-            return tail
+            local relative = vim.fn.fnamemodify(path, ":~:.")
+            local dir = vim.fn.fnamemodify(path, ":~:.:h")
+            local display = tail .. " - " .. dir
+
+            return display, {
+              { { 0, #tail }, "TelescopeResultsField" },           -- bright filename
+              { { #tail, #display }, "TelescopeResultsComment" },  -- dimmed " - path"
+            }
           end,
         }
       })

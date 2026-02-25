@@ -37,6 +37,9 @@ vim.filetype.add({
 
 vim.opt.autoread = true
 
+-- run command :MinimapToggle
+vim.keymap.set("n", "<F4>", ":MinimapToggle<CR>", { desc = "Toggle Minimap" })
+
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
   callback = function()
     if vim.fn.mode() ~= "c" then

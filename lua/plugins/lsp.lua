@@ -9,7 +9,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "pyright", "ts_ls", "tailwindcss" },
+        ensure_installed = { "lua_ls", "pyright", "ts_ls", "tailwindcss", "pyrefly", "rust_analyzer" },
       })
     end,
   },
@@ -17,16 +17,27 @@ return {
     "neovim/nvim-lspconfig",
     config = function()
       vim.lsp.config("lua_ls", {})
-      vim.lsp.config("pyright", {})
       vim.lsp.config("ts_ls", {
         root_markers = { "tsconfig.json", "package.json" },
         single_file_support = false,
       })
       vim.lsp.config("tailwindcss", {})
+      -- vim.lsp.config("pyright", {})
+      vim.lsp.config("pyrefly", {
+        settings = {
+          pyrefly = {
+            pythonInterpreter = "/Users/jacobpradels/Library/Caches/pypoetry/virtualenvs/orgs-2elLltSQ-py3.14/bin/python",
+          },
+        },
+      })
+      vim.lsp.config("rust_analyzer", {})
+
       vim.lsp.enable("lua_ls")
-      vim.lsp.enable("pyright")
+      -- vim.lsp.enable("pyright")
+      vim.lsp.enable("pyrefly")
       vim.lsp.enable("ts_ls")
       vim.lsp.enable("tailwindcss")
+      vim.lsp.enable("rust_analyzer")
 
       vim.diagnostic.config({
         virtual_text = false,  -- disables the inline text at end of line
