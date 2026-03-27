@@ -8,7 +8,7 @@ return {
     },
     config = function()
       require("neogit").setup({})
-      vim.keymap.set("n", "<leader>xg", ":Neogit<CR>")
+      vim.keymap.set("n", "<leader>gg", ":Neogit<CR>")
     end,
   }
 }

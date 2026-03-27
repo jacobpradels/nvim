@@ -9,7 +9,8 @@ return {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "pyright", "ts_ls", "tailwindcss", "pyrefly", "rust_analyzer" },
+        ensure_installed = { "lua_ls", "pyrefly", "ts_ls", "tailwindcss", "rust_analyzer", "gopls", "zls" },
+        automatic_enable = false,
       })
     end,
   },
@@ -22,22 +23,18 @@ return {
         single_file_support = false,
       })
       vim.lsp.config("tailwindcss", {})
-      -- vim.lsp.config("pyright", {})
-      vim.lsp.config("pyrefly", {
-        settings = {
-          pyrefly = {
-            pythonInterpreter = "/Users/jacobpradels/Library/Caches/pypoetry/virtualenvs/orgs-2elLltSQ-py3.14/bin/python",
-          },
-        },
-      })
+      vim.lsp.config("pyrefly", {})
       vim.lsp.config("rust_analyzer", {})
+      vim.lsp.config("gopls", {})
+      vim.lsp.config("zls", {})
 
       vim.lsp.enable("lua_ls")
-      -- vim.lsp.enable("pyright")
       vim.lsp.enable("pyrefly")
       vim.lsp.enable("ts_ls")
       vim.lsp.enable("tailwindcss")
       vim.lsp.enable("rust_analyzer")
+      vim.lsp.enable("gopls")
+      vim.lsp.enable("zls")
 
       vim.diagnostic.config({
         virtual_text = false,  -- disables the inline text at end of line
@@ -49,7 +46,29 @@ return {
 
       vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float)
 
-      vim.keymap.set("n", "gd", vim.lsp.buf.definition)
+      vim.keymap.set("n", "gd", function()
+        vim.lsp.buf.definition({
+          on_list = function(options)
+            local seen = {}
+            local unique = {}
+            for _, item in ipairs(options.items) do
+              local key = item.filename .. ":" .. item.lnum .. ":" .. item.col
+              if not seen[key] then
+                seen[key] = true
+                table.insert(unique, item)
+              end
+            end
+            if #unique == 1 then
+              vim.cmd("edit " .. unique[1].filename)
+              vim.api.nvim_win_set_cursor(0, { unique[1].lnum, unique[1].col - 1 })
+            else
+              options.items = unique
+              vim.fn.setqflist({}, " ", options)
+              vim.cmd("copen")
+            end
+          end,
+        })
+      end)
       vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
         vim.lsp.handlers.hover, {
           border = "rounded",

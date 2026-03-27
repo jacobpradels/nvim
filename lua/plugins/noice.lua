@@ -7,7 +7,14 @@ return {
       "rcarriga/nvim-notify",
     },
     config = function()
+      vim.keymap.set("n", "<leader>nd", "<cmd>NoiceDismiss<CR>", { desc = "Dismiss notifications" })
+
       require("noice").setup({
+        views = {
+          notify = {
+            timeout = 3000,
+          },
+        },
         lsp = {
           override = {
             ["vim.lsp.util.convert_input_to_markdown_lines"] = true,

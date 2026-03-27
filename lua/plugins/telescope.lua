@@ -39,7 +39,11 @@ return {
       })
 
       vim.keymap.set("n", "<leader>p", require("telescope.builtin").find_files)
-      vim.keymap.set("n", "<leader>fg", require("telescope.builtin").live_grep)
+      vim.keymap.set("n", "<leader>fg", function()
+        require("telescope.builtin").live_grep({
+          additional_args = { "--hidden" },
+        })
+      end)
       vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers)
     end,
   }
