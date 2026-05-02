@@ -28,6 +28,7 @@ vim.opt.clipboard = "unnamedplus"
 vim.keymap.set("n", "<D-/>", "gcc", { remap = true, desc = "Toggle comment" })
 vim.keymap.set("v", "<D-/>", "gc", { remap = true, desc = "Toggle comment" })
 
+vim.keymap.set("n", "<leader>tc", "<cmd>tabc<cr>", { desc = "Close tab" })
 vim.keymap.set("n", "<leader>sv", "<cmd>vsp<cr>", { desc = "Vertical split" })
 vim.keymap.set("n", "<leader>sh", "<cmd>sp<cr>", { desc = "Horizontal split" })
 vim.keymap.set("n", "<leader>sx", "<cmd>close<cr>", { desc = "Close split" })

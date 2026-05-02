@@ -11,8 +11,47 @@ return {
     lazy = false,
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
+      local actions = require("telescope.actions")
+      local action_state = require("telescope.actions.state")
+
+      local function open_in_editor_tab(filepath)
+        local editor_tab = nil
+        for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
+          local is_neogit = false
+          for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
+            if vim.bo[vim.api.nvim_win_get_buf(win)].filetype:match("^Neogit") then
+              is_neogit = true
+              break
+            end
+          end
+          if not is_neogit then
+            editor_tab = tabpage
+            break
+          end
+        end
+        if editor_tab then
+          vim.api.nvim_set_current_tabpage(editor_tab)
+        else
+          vim.cmd("tabnew")
+        end
+        vim.cmd("edit " .. vim.fn.fnameescape(filepath))
+      end
+
+      local smart_open = function(prompt_bufnr)
+        local entry = action_state.get_selected_entry()
+        actions.close(prompt_bufnr)
+        local filepath = entry.path or entry.filename
+        if filepath then
+          open_in_editor_tab(filepath)
+        end
+      end
+
     require("telescope").setup({
         defaults = {
+          mappings = {
+            i = { ["<CR>"] = smart_open },
+            n = { ["<CR>"] = smart_open },
+          },
           path_display = function(_, path)
             local tail = require("telescope.utils").path_tail(path)
             local name, ext = tail:match("^(.+)%.(.+)$")
@@ -38,13 +77,37 @@ return {
         }
       })
 
-      vim.keymap.set("n", "<leader>p", require("telescope.builtin").find_files)
-      vim.keymap.set("n", "<leader>fg", function()
+      local function live_grep_in_dir(dir)
         require("telescope.builtin").live_grep({
           additional_args = { "--hidden" },
+          search_dirs = { dir },
+          prompt_title = "Grep in " .. vim.fn.fnamemodify(dir, ":~:."),
+          attach_mappings = function(_, map)
+            map("i", "<C-f>", function(prompt_bufnr)
+              local entry = action_state.get_selected_entry()
+              actions.close(prompt_bufnr)
+              local next_dir = vim.fn.fnamemodify(entry.path or entry.filename, ":h")
+              live_grep_in_dir(next_dir)
+            end)
+            return true
+          end,
         })
+      end
+
+      vim.keymap.set("n", "<leader>p", require("telescope.builtin").find_files)
+      vim.keymap.set("n", "<leader>fg", function()
+        live_grep_in_dir(vim.fn.getcwd())
       end)
+      vim.keymap.set("n", "<leader>fd", function()
+        local dir = vim.fn.input("Search dir: ", vim.fn.getcwd() .. "/", "dir")
+        if dir == "" then return end
+        live_grep_in_dir(dir)
+      end, { desc = "Live grep in directory" })
       vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers)
+
+      -- navigate quickfix list (populate with <C-q> from telescope)
+      vim.keymap.set("n", "]q", "<cmd>cnext<cr>", { desc = "Next quickfix" })
+      vim.keymap.set("n", "[q", "<cmd>cprev<cr>", { desc = "Prev quickfix" })
     end,
   }
 }
