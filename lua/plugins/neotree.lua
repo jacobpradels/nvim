@@ -11,11 +11,14 @@ return {
       require("neo-tree").setup({
         filesystem = {
           follow_current_file = {
-            enabled = true,          -- auto reveal current file
-            leave_dirs_open = false, -- close dirs that don't contain the file
+            enabled = true,
+            leave_dirs_open = false,
           },
         },
       })
+      vim.keymap.set("n", "<leader>t", function()
+        vim.cmd("Neotree toggle")
+      end)
     end,
   }
 }

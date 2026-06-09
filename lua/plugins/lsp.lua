@@ -17,16 +17,10 @@ return {
   {
     "neovim/nvim-lspconfig",
     config = function()
-      vim.lsp.config("lua_ls", {})
       vim.lsp.config("ts_ls", {
         root_markers = { "tsconfig.json", "package.json" },
         single_file_support = false,
       })
-      vim.lsp.config("tailwindcss", {})
-      vim.lsp.config("pyrefly", {})
-      vim.lsp.config("rust_analyzer", {})
-      vim.lsp.config("gopls", {})
-      vim.lsp.config("zls", {})
 
       vim.lsp.enable("lua_ls")
       vim.lsp.enable("pyrefly")
@@ -59,7 +53,7 @@ return {
               end
             end
             if #unique == 1 then
-              vim.cmd("edit " .. unique[1].filename)
+              vim.cmd("edit " .. vim.fn.fnameescape(unique[1].filename))
               vim.api.nvim_win_set_cursor(0, { unique[1].lnum, unique[1].col - 1 })
             else
               options.items = unique
@@ -69,16 +63,9 @@ return {
           end,
         })
       end)
-      vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
-        vim.lsp.handlers.hover, {
-          border = "rounded",
-        }
-      )
-
       vim.api.nvim_create_autocmd("CursorHold", {
         callback = function()
           vim.diagnostic.open_float()
-          vim.lsp.buf.hover()
         end,
       })
 
