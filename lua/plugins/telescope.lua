@@ -43,6 +43,12 @@ return {
         local filepath = entry.path or entry.filename
         if filepath then
           open_in_editor_tab(filepath)
+          if entry.lnum then
+            vim.schedule(function()
+              vim.api.nvim_win_set_cursor(0, { entry.lnum, (entry.col or 1) - 1 })
+              vim.cmd("normal! zz")
+            end)
+          end
         end
       end
 

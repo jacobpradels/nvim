@@ -11,6 +11,7 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 vim.opt.updatetime = 500
+vim.opt.redrawtime = 10000
 vim.g.mapleader = " "
 
 vim.opt.tabstop = 2
